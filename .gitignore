@@ -125,4 +125,8 @@ work_dirs/
 *.sh~
 
 # Custom Ignore
-/trained_models
+pths/
+trained_models/
+wandb/
+ICDAR17_Korean_EDA.ipynb
+OCR_EDA.ipynb
