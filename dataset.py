@@ -322,7 +322,6 @@ def filter_vertices(vertices, labels, ignore_under=0, drop_under=0):
         return vertices, labels
 
     new_vertices, new_labels = vertices.copy(), labels.copy()
-
     areas = np.array([Polygon(v.reshape((4, 2))).convex_hull.area for v in vertices])
     labels[areas < ignore_under] = 0
 
@@ -340,7 +339,10 @@ class SceneTextDataset(Dataset):
             anno = json.load(f)
 
         self.anno = anno
-        self.image_fnames = sorted(anno['images'].keys())
+        self.image_fnames = []
+        for name in sorted(anno['images'].keys()):
+            self.dropitem(name)
+        #self.image_fnames = sorted(anno['images'].keys())
         self.image_dir = osp.join(root_dir, 'images')
 
         self.image_size, self.crop_size = image_size, crop_size
@@ -349,14 +351,26 @@ class SceneTextDataset(Dataset):
     def __len__(self):
         return len(self.image_fnames)
 
+    def dropitem(self, image_fname):
+        if len(self.anno['images'][image_fname]['words'].values()) != 0:
+            self.image_fnames.append(image_fname)
+        
     def __getitem__(self, idx):
         image_fname = self.image_fnames[idx]
         image_fpath = osp.join(self.image_dir, image_fname)
 
         vertices, labels = [], []
         for word_info in self.anno['images'][image_fname]['words'].values():
-            vertices.append(np.array(word_info['points']).flatten())
+            if len(np.array(word_info['points']).flatten()) != 8: #T4073 custom : change poly to rect
+                t_poly = np.array(word_info['points'])
+                t_rect = np.array([t_poly[:,0].min(), t_poly[:,1].min(), t_poly[:,0].max(),t_poly[:,1].min(),
+                          t_poly[:,0].max(), t_poly[:,1].max(), t_poly[:,0].min(),t_poly[:,1].min()])
+                vertices.append(t_rect)
+            else:
+                vertices.append(np.array(word_info['points']).flatten())
             labels.append(int(not word_info['illegibility']))
+               
+        #vertices, labels = np.array(vertices, dtype=np.float32), np.array(labels, dtype=np.int64)
         vertices, labels = np.array(vertices, dtype=np.float32), np.array(labels, dtype=np.int64)
 
         vertices, labels = filter_vertices(vertices, labels, ignore_under=10, drop_under=1)
