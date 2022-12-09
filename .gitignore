@@ -130,3 +130,5 @@ trained_models/
 wandb/
 ICDAR17_Korean_EDA.ipynb
 OCR_EDA.ipynb
+test.ipynb
+data_preparation(final).ipynb
