@@ -43,6 +43,7 @@ def parse_args():
     parser.add_argument('--early_stopping', type=str, default=Config.early_stopping)
     parser.add_argument('--expr_name', type=str, default=Config.expr_name)
     parser.add_argument('--resume_from', type=str, default=Config.resume_from)
+    parser.add_argument('--save_point', nargs="+", type=int, default=Config.save_point)
 
     args = parser.parse_args()
 
@@ -53,7 +54,7 @@ def parse_args():
 
 
 def do_training(data_dir, model_dir, device, image_size, input_size, num_workers, batch_size,
-                learning_rate, max_epoch, save_interval, optimizer, early_stopping, expr_name, resume_from):
+                learning_rate, max_epoch, save_interval, optimizer, early_stopping, expr_name, resume_from, save_point):
     dataset = SceneTextDataset(data_dir, split='train', image_size=image_size, crop_size=input_size)
     dataset = EASTDataset(dataset)
     num_batches = math.ceil(len(dataset) / batch_size)
@@ -150,7 +151,6 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
             if not osp.exists(model_dir):
                 os.makedirs(model_dir)
 
-
             ckpt_fpath = osp.join(model_dir, 'real-latest.pth')
 
             torch.save({
@@ -160,6 +160,21 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
                 ckpt_fpath)
 
             print(f'latest model saved at epoch{epoch+1}')
+            
+            
+        if (epoch + 1) in save_point:
+            if not osp.exists(model_dir):
+                os.makedirs(model_dir)
+
+            ckpt_fpath = osp.join(model_dir, f'epoch-{epoch+1}.pth')
+
+            torch.save({
+                'epoch': epoch,
+                'optimizer_state_dict': optimizer.state_dict(),
+                'model_state_dict': model.state_dict()},
+                ckpt_fpath)
+
+            print(f'model saved at epoch{epoch+1}')
 
 
 def main(args):
