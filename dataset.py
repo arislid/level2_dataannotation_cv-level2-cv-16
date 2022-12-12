@@ -381,7 +381,7 @@ class SceneTextDataset(Dataset):
         image, vertices = rotate_img(image, vertices)
         # custom crop size
         crop_rate = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-        crop_size = int(np.random.choice(crop_rate, 1)[0] * self.crop_size)
+        crop_size = int(np.random.choice(crop_rate) * self.crop_size)
         image, vertices = crop_img(image, vertices, labels, crop_size)
         image, vertices = resize_img(image, vertices, self.crop_size)
 
