@@ -13,6 +13,7 @@ class Config:
     save_interval=5
     optimizer='Adam'
     early_stopping=5
-    expr_name='icdar19_aug_1_continue'
-    resume_from='./trained_models/best_mean_loss.pth' # 이어서 학습 할 .pth 경로 없으면 ''
-    save_point=[38, 94] # 저장하고 싶은 epoch
+    expr_name='icdar19_crop_1'
+    resume_from='' # 이어서 학습 할 .pth 경로 없으면 ''
+    save_point=[38, 66, 94] # 저장하고 싶은 epoch
+    seed=42

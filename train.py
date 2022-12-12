@@ -5,6 +5,10 @@ import math
 from datetime import timedelta
 from argparse import ArgumentParser
 
+import numpy as np
+import random
+import torch.backends.cudnn as cudnn
+
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import lr_scheduler
@@ -17,6 +21,16 @@ from model import EAST
 import wandb
 from importlib import import_module
 from config import Config
+
+
+def seed_everything(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)  # if use multi-GPU
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(seed)
+    random.seed(seed)
 
 
 def parse_args():
@@ -44,6 +58,7 @@ def parse_args():
     parser.add_argument('--expr_name', type=str, default=Config.expr_name)
     parser.add_argument('--resume_from', type=str, default=Config.resume_from)
     parser.add_argument('--save_point', nargs="+", type=int, default=Config.save_point)
+    parser.add_argument('--seed', type=int, default=Config.seed)
 
     args = parser.parse_args()
 
@@ -54,7 +69,8 @@ def parse_args():
 
 
 def do_training(data_dir, model_dir, device, image_size, input_size, num_workers, batch_size,
-                learning_rate, max_epoch, save_interval, optimizer, early_stopping, expr_name, resume_from, save_point):
+                learning_rate, max_epoch, save_interval, optimizer, early_stopping, expr_name, resume_from, save_point, seed):
+    seed_everything(seed)
     dataset = SceneTextDataset(data_dir, split='train', image_size=image_size, crop_size=input_size)
     dataset = EASTDataset(dataset)
     num_batches = math.ceil(len(dataset) / batch_size)

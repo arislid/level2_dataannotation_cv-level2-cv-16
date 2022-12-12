@@ -379,7 +379,11 @@ class SceneTextDataset(Dataset):
         image, vertices = resize_img(image, vertices, self.image_size)
         image, vertices = adjust_height(image, vertices)
         image, vertices = rotate_img(image, vertices)
-        image, vertices = crop_img(image, vertices, labels, self.crop_size)
+        # custom crop size
+        crop_rate = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        crop_size = int(np.random.choice(crop_rate, 1)[0] * self.crop_size)
+        image, vertices = crop_img(image, vertices, labels, crop_size)
+        image, vertices = resize_img(image, vertices, self.crop_size)
 
         if image.mode != 'RGB':
             image = image.convert('RGB')
@@ -387,12 +391,7 @@ class SceneTextDataset(Dataset):
 
         funcs = []
         if self.color_jitter:
-            funcs.extend([
-                A.ColorJitter(0.5, 0.5, 0.5, 0.25),
-                A.CLAHE((1, 15)),
-                A.GaussNoise((50, 200), p=0.3),
-                A.MotionBlur((5, 10), p=0.1),
-            ])
+            funcs.append(A.ColorJitter(0.5, 0.5, 0.5, 0.25))
         if self.normalize:
             funcs.append(A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)))
         transform = A.Compose(funcs)
