@@ -196,12 +196,12 @@ def crop_img(img, vertices, labels, length):
         region      : cropped image region
         new_vertices: new vertices in cropped region
     '''
-    h, w = img.height, img.width
+    h, w = img.height, img.width # 1024, 1024
     # confirm the shortest side of image >= length
     if h >= w and w < length:
-        img = img.resize((length, int(h * length / w)), Image.BILINEAR)
+        img = img.resize((length, int(length * (h / w))), Image.BILINEAR)
     elif h < w and h < length:
-        img = img.resize((int(w * length / h), length), Image.BILINEAR)
+        img = img.resize((int(length * (w / h)), length), Image.BILINEAR)
     ratio_w = img.width / w
     ratio_h = img.height / h
     assert(ratio_w >= 1 and ratio_h >= 1)
@@ -256,6 +256,17 @@ def rotate_all_pixels(rotate_mat, anchor_x, anchor_y, length):
 
 
 def resize_img(img, vertices, size):
+    h, w = img.height, img.width
+    ratio = size / max(h, w)
+    if w > h:
+        img = img.resize((size, int(h * ratio)), Image.BILINEAR)
+    else:
+        img = img.resize((int(w * ratio), size), Image.BILINEAR)
+    new_vertices = vertices * ratio
+    return img, new_vertices
+
+
+def resize_img_filter(img, vertices, size):
     h, w = img.height, img.width
     ratio = size / max(h, w)
     if w > h:
@@ -332,6 +343,16 @@ def filter_vertices(vertices, labels, ignore_under=0, drop_under=0):
     return new_vertices, new_labels
 
 
+def filter_annoying(img, vertices):
+    h, w = img.height, img.width
+    for i in range(vertices.shape[0]):
+        for j in range(4):
+            crop_max_w = vertices[i, [0, 2, 4, 6]].max()
+            crop_max_h = vertices[i, [1, 3, 5, 7]].max()
+            crop_min_w = vertices[i, [0, 2, 4, 6]].min()
+            crop_min_h = vertices[i, [1, 3, 5, 7]].min()
+
+
 class SceneTextDataset(Dataset):
     def __init__(self, root_dir, split='train', image_size=1024, crop_size=512, color_jitter=True,
                  normalize=True):
@@ -380,7 +401,7 @@ class SceneTextDataset(Dataset):
         image, vertices = adjust_height(image, vertices)
         image, vertices = rotate_img(image, vertices)
         # custom crop size
-        crop_rate = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        crop_rate = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
         crop_size = int(np.random.choice(crop_rate) * self.crop_size)
         image, vertices = crop_img(image, vertices, labels, crop_size)
         image, vertices = resize_img(image, vertices, self.crop_size)
