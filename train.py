@@ -89,7 +89,7 @@ def do_training(data_dir, use_val, val_dir, model_dir, device, image_size, input
     
     if use_val:
         #using training data of ICDAR17
-        val_dataset = ValidSceneTextDataset(val_dir, split='train', image_size=image_size, crop_size=input_size, color_jitter=False)
+        val_dataset = ValidSceneTextDataset(val_dir, split='val', image_size=image_size, crop_size=input_size, color_jitter=False)
         val_dataset.load_image()
         print(f"Load valid data {len(val_dataset)}")
         valid_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=ValidSceneTextDataset.collate_fn)
