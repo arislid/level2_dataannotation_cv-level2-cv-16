@@ -14,8 +14,8 @@ class Config:
     max_epoch=200
     save_interval=1
     optimizer='Adam'
-    early_stopping=10
-    expr_name='icdar19_crop_1_continue_val'
-    resume_from='./trained_models/best_mean_loss.pth' # 이어서 학습 할 .pth 경로 없으면 ''
+    early_stopping=100
+    expr_name='icdar19_crop_1_continue_val_2'
+    resume_from='./trained_models/real-latest.pth' # 이어서 학습 할 .pth 경로 없으면 ''
     save_point=[50, 75, 100, 125, 150, 175, 200] # 저장하고 싶은 epoch
     seed = 42

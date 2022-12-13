@@ -547,6 +547,8 @@ class ValidSceneTextDataset(SceneTextDataset2):
             vertices, labels = filter_vertices(vertices, labels, ignore_under=10, drop_under=1)
             image = Image.open(image_fpath)
             image, vertices = resize_img(image, vertices, self.image_size)
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
             image = np.array(image)
             self.images.append(self.prep_fn(image=image)['image'])
             self.vertices.append(vertices.reshape(-1,4,2))
