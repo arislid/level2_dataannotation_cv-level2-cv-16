@@ -16,7 +16,7 @@
 ## 📰 **Links**
 
 - [비전 길잡이 Notion 📝](https://vision-pathfinder.notion.site/b90e838e2bc24dccb97e7e7e578c0191)
-- [비전 길잡이 발표자료 & WrapUpReport](./appendix/)
+- [비전 길잡이 발표자료](./appendix/)
 
 ## 📰 **Result**
 
@@ -41,7 +41,7 @@
 
 ## 📘 **Dataset**
 
-![image](https://user-images.githubusercontent.com/113173095/214503526-04a7e69e-fa9c-4bad-b0c0-293bae4475c4.png)
+![image](https://user-images.githubusercontent.com/113173095/214503526-04a7e69e-fa9c-4bad-b0c0-293bae4475gitc4.png)
 
 - boostcamp 자체 annotation 데이터셋 포함 4개 범주 데이터셋 활용
 
