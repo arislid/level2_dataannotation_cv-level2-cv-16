@@ -108,7 +108,7 @@
 ## 📰 **Directory Structure**
 
 ```
-|-- 🗂 appendix : 발표자료 및 WrapUpReport
+|-- 🗂 appendix : 발표자료
 |-- 🗂 code     : 학습시 사용했던 코드
 `-- README.md
 ```
